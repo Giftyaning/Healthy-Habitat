@@ -1,0 +1,255 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  list-style: none;
+  text-decoration: none;
+}
+
+:root {
+  /*-- Colors --*/
+  --success-clr: #00a251;
+  --danger-clr: #ef3826;
+  --white-clr: #ffffff;
+  --black-clr: #0000;
+}
+
+a {
+  text-decoration: none !important;
+  color: inherit !important;
+}
+
+/*-- NAVBAR --*/
+
+/* Search Engine */
+.search {
+  width: 45%;
+}
+.input {
+  border: #00a251 1px solid !important;
+  border-radius: 0.5em !important;
+  padding: 1.2em !important;
+}
+.search-input::placeholder {
+  opacity: 0.4 !important;
+  padding: 1.5em;
+}
+.input::placeholder {
+  padding: 0.7em;
+}
+
+/* User Profile */
+.profile {
+  gap: 0.4em;
+  padding: 0.5em;
+}
+.profile-icon {
+  font-size: 2.5em;
+}
+
+/*-- Buttons --*/
+.hero-btn {
+  background-color: var(--success-clr) !important;
+  color: var(--white-clr) !important;
+  padding: .5em 2em !important;
+}
+.sign {
+  padding: 0.5em;
+  border: #00a251 solid 1px !important;
+  background-color: var(--success-clr) !important;
+  color: var(--white-clr) !important;
+  border-radius: 0.2em;
+}
+.btn-add{
+    border: 1px solid var(--success-clr) !important;
+    padding:.5em;
+}
+
+/*-- End of Navbar--*/
+
+/*-- Hero Section --*/
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 5em;
+}
+.hero {
+  position: relative;
+  width: 100%;
+  display: block;
+  margin: 0;
+  padding: 0;
+  line-height: 0;
+}
+.hero-image-container {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+.hero-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 0;
+  padding: 0;
+}
+.hero-products {
+  position: relative;
+  margin-top: -16em;
+  z-index: 2;
+  padding-bottom: 2rem;
+}
+
+/*-- Hero Products --*/
+.product-card {
+  background-color: var(--white-clr);
+  padding: 0.5em;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  height: 100%;
+  border-radius: 8px;
+  color: var(--black-clr) !important;
+}
+.product-card-title {
+  width: 100%;
+  margin-bottom: 0.025em;
+  font-weight: 600;
+}
+.product-img-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  margin: 0.5rem 0;
+}
+.product-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+.product-body {
+  width: 100%;
+  align-self: flex-end;
+  margin-top: auto;
+  justify-content: space-between;
+}
+.shop-icon {
+  font-size: 2em;
+}
+.shop-opt {
+  justify-content: space-between;
+}
+.product-price {
+  font-weight: 600;
+  font-size: 1.8rem;
+}
+
+.counsel-img-container {
+  width: 100%;
+  height: 400px;
+  overflow: hidden;
+  position: relative;
+  border-radius: 8px;
+}
+.counsel-img-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  object-fit: cover;
+}
+
+/*-- End of Hero section--*/
+
+/*-- Login Page */
+.card {
+  width: 60%;
+  padding: 7em;
+  border: none !important;
+}
+
+.subtitle {
+  max-width: 70%;
+}
+.login-form {
+  gap: 1em;
+}
+
+/*-- End of Login Page --*/
+
+/*-- Sign up option --*/
+.sign-up-option {
+  gap: 1.2em;
+  margin-top: 2em;
+}
+
+/*-- End of Sign up option --*/
+
+/*-- Dashboards --*/
+.dashboard-header {
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.dashboard-nav .nav-link{
+    color: var(--success-clr) !important; 
+    color: rgba(255,255,255,0.7);
+    border: none;
+    font-weight: 500;
+    padding: 0.5rem 1.5rem;
+}
+.nav-link.active {
+    color: white;
+    background-color: transparent;
+    border-bottom: 3px solid var(--success-clr) !important;
+}
+.dashboard-content {
+    padding: 2rem;
+}
+.tab-content {
+    padding: 2rem;
+    margin-top: 1rem;
+}
+.chart-container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+.add-area-form {
+    max-width: 800px;
+    margin: 0 auto;
+}
+.areas-table {
+    margin-top: 2rem;
+}        
+.table th {
+    background-color: var(--success-clr);
+    color: white;
+}
+.add-area-form{
+    padding: 2em 10em !important;
+}
+.form-select{
+    border: 1px solid var(--success-clr) !important;
+    padding: 1.1em !important;
+}
+.status-dropdown {
+    min-width: 120px;
+}
+.view-certificate {
+    color: var(--success-clr);
+    text-decoration: none;
+    font-weight: 500;
+}    
+.view-certificate:hover {
+    text-decoration: underline;
+}
+.products-top{
+    display: flex !important;
+    justify-content: space-between !important;
+}
