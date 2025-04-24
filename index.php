@@ -452,7 +452,7 @@
                     <!-- Product 4 -->
                     <div class="col-md-3 col-6">
                         <div class="product-card">
-                            <div class="product-card-title text-dark">Natural Deoforant</div>
+                            <div class="product-card-title text-dark">Natural Deodorant</div>
                             <div class="product-img-container d-flex align-items-center justify-content-center">
                                 <img src="images/deodorant.svg" class="product-img" alt="Natural Deoforant">
                             </div>
@@ -484,7 +484,7 @@
                 <h1 class="product-title">Mindfulness and Mental Health</h1>
                 <p>Counselling and Therapy</p>
                 <div class="counsel-img-container">
-                    <img src="images/counselling.svg" alt="">
+                    <img src="images/counselling.png" alt="">
                 </div>
             </div>
 
