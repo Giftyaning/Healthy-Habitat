@@ -1,3 +1,38 @@
+<?php 
+include("connection.php");
+session_start();
+
+if(isset($_POST["login"])) {
+    $email = trim($_POST["email"]);
+    $password = $_POST["password"];
+
+    // Debug
+    error_log("Login attempt for: $email");
+
+    $stmt = $conn->prepare("SELECT email, password FROM login WHERE email = ?");
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if($result->num_rows === 1) {
+        $user = $result->fetch_assoc();
+        
+        // Verify hash (or plain text as fallback - remove after testing)
+        if(password_verify($password, $user['password']) || $password === $user['password']) {
+            $_SESSION['email'] = $email;
+            header("Location: index.php");
+            exit();
+        } else {
+            echo '<script>alert("Invalid password"); window.location.href="login.php";</script>';
+        }
+    } else {
+        echo '<script>alert("Email not found"); window.location.href="login.php";</script>';
+    }
+    $stmt->close();
+}
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
