@@ -113,6 +113,63 @@ $businessEmail = $_SESSION['business_email'];
                     <canvas id="analyticsChart"></canvas>
                 </div>
             </div>
+
+            <!-- Product / Service addition -->
+            <form action="" method="post" enctype="multipart/form-data" class="mt-5 login-form d-flex flex-column" id="productForm">
+                <!-- Card Header -->
+                <div class="card-header d-flex flex-column align-items-center w-100">
+                    <h1 class="form-title">Sell Faster!</h1>
+                    <p class="subtitle d-flex justify-content-center align-items-center w-100 px-3">
+                        Boost your sales by adding your products / services to our marketplace in minutes.
+                    </p>
+                </div>
+
+                <!-- Product/Service Name -->
+                <div class="mb-3">
+                    <label for="productName" class="form-label">Product or Service Name*</label>
+                    <input type="text" placeholder="Product or Service name" name="name" class="form-control input" id="productName" required>
+                </div>
+
+                <!-- Description -->
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description*</label>
+                    <textarea name="description" class="form-control input" id="description" placeholder="Brief description of your product or service" required></textarea>
+                </div>
+
+                <!-- Size (if applicable) -->
+                <div class="mb-3">
+                    <label for="size" class="form-label">Size (if applicable)</label>
+                    <input type="text" placeholder="Size (e.g., 500ml, Large, 10-pack)" name="size" class="form-control input" id="size">
+                </div>
+
+                <!-- Health Benefits -->
+                <div class="mb-3">
+                    <label for="health_benefits" class="form-label">Health Benefits*</label>
+                    <textarea name="health_benefits" class="form-control input" id="health_benefits" placeholder="List health benefits" required></textarea>
+                </div>
+
+                <!-- Pricing Category -->
+                <div class="mb-3">
+                    <label for="pricing_category" class="form-label">Pricing Category*</label>
+                    <select name="pricing_category" id="pricing_category" class="form-select input" required>
+                        <option value="" disabled selected>Select Pricing Category</option>
+                        <option value="budget">Budget</option>
+                        <option value="midrange">Midrange</option>
+                        <option value="premium">Premium</option>
+                    </select>
+                </div>
+
+                <!-- Certification Upload -->
+                <div class="mb-3">
+                    <label for="certificate" class="form-label">Certification (optional)</label>
+                    <input type="file" name="certificate" class="form-control input" id="certificate" accept=".pdf,.jpg,.jpeg,.png">
+                    <small class="form-text text-muted">Upload a certificate file (PDF, JPG, PNG).</small>
+                </div>
+
+                <!-- Submit Button -->
+                <input type="submit" value="Add Product / Service" name="add_product" class="btn sign w-100 p-3">
+            </form>
+
         </div>
     </main>
 
