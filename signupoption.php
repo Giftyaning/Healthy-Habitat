@@ -18,8 +18,13 @@
 
             <!-- Sign Up Option -->
             <div class="sign-up-option d-flex flex-column p-3">
+               <a href="businesssignup.php">
                 <button class="business-acc">Business Account</button>
+               </a> 
+               <a href="usersignup.php">
                 <button class="personal-acc">Personal Account</button>
+               </a>
+                
             </div>           
         </div>
     

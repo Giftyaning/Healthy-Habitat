@@ -1,9 +1,15 @@
+<?php
+session_start();
+include("connection.php");
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <title>Sign Up Page</title>
@@ -11,17 +17,25 @@
 <body>
     <div class="container login min-vh-100 d-flex align-items-center justify-content-center">
         <div class="card d-flex">
+            <!-- Sign Up Form -->
+            <form action="" method="post" class="mt-4 login-form d-flex flex-column" id="signupForm">
+                
             <div class="card-header d-flex flex-column align-items-center w-100">
-                <h1 class="form-title">Welcome</h1>
-                <p class="subtitle d-flex justify-content-center align-items-center w-100 px-3">Log in to access your account and continue shopping securely</p>
-            </div>
+                    <h1 class="form-title">Welcome</h1>
+                    <p class="subtitle d-flex justify-content-center align-items-center w-100 px-3">Register your business account</p>
+                </div>
 
-            <!-- Sign In Form -->
-            <form action="signup.php" method="post" class="mt-4 login-form d-flex flex-column" id="signupForm">
+                <input type="hidden" name="account_type" value="business">
+
                 <!-- Company Information -->
                 <div class="mb-3">
                     <label for="company" class="form-label">Company Name*</label>
                     <input type="text" placeholder="Enter Company Name" name="company" class="form-control input" id="company" required>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="description" class="form-label">Business Description</label>
+                    <textarea name="description" class="form-control input" id="description" placeholder="Brief description of your business"></textarea>
                 </div>
                 
                 <!-- Contact Information -->
@@ -36,6 +50,11 @@
                 </div>
                 
                 <!-- Location Information -->
+                <div class="mb-3">
+                    <label for="address" class="form-label">Address*</label>
+                    <input type="text" placeholder="Enter Street Address" name="address" class="form-control input" id="address" required>
+                </div>
+                
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="postcode" class="form-label">Postcode*</label>
@@ -95,12 +114,12 @@
                 <!-- Password -->
                 <div class="mb-3">
                     <label for="password" class="form-label">Password*</label>
-                    <input type="password" placeholder="Create Password" name="password" class="form-control input" id="password" required>
+                    <input type="password" placeholder="Create Password (min 8 characters)" name="password" class="form-control input" id="password" minlength="8" required>
                 </div>
                 
                 <div class="mb-3">
                     <label for="confirm-password" class="form-label">Confirm Password*</label>
-                    <input type="password" placeholder="Confirm Password" name="confirm_password" class="form-control input" id="confirm-password" required>
+                    <input type="password" placeholder="Confirm Password" name="confirm_password" class="form-control input" id="confirm-password" minlength="8" required>
                 </div>
                                
                 <input type="submit" value="Create Account" name="signup" class="btn sign w-100 p-3 mt-2">
