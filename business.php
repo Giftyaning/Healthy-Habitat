@@ -1,3 +1,17 @@
+<?php
+session_start();
+
+// To check if the business is logged in
+if (!isset($_SESSION['business_email'])) {
+    // If not logged in, redirect to login page
+    header("Location: login.php");
+    exit();
+}
+
+$businessEmail = $_SESSION['business_email'];
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,6 +30,10 @@
         <img src="images/logo-dark.svg" alt="Council Logo" class="logo">
         <div class="profile-section">
             <i class="bi bi-person-circle profile-icon"></i>
+            <div class="userLoggedIn">
+                <div class="user-logged-in-name"><?php echo htmlspecialchars($businessEmail); ?></div>
+                <a href="logout.php" class="logout-link">LOG OUT</a>
+            </div>
         </div>
     </header>
     
@@ -89,7 +107,7 @@
             </div>
             
             <!-- Products Ratings -->
-            <div class="tab-pane fade show active" id="analytics" role="tabpanel">
+            <div class="tab-pane fade " id="analytics" role="tabpanel">
                 <h2 class="mb-4 mt-4">Product Ratings</h2>
                 <div class="chart-container">
                     <canvas id="analyticsChart"></canvas>
