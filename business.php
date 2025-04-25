@@ -27,7 +27,7 @@ $businessEmail = $_SESSION['business_email'];
 <body>
     <!-- Dashboard Header -->
     <header class="dashboard-header">
-        <img src="images/logo-dark.svg" alt="Council Logo" class="logo">
+        <img src="images/logo-dark.svg" alt="Logo" class="logo">
         <div class="profile-section">
             <i class="bi bi-person-circle profile-icon"></i>
             <div class="userLoggedIn">
@@ -44,7 +44,7 @@ $businessEmail = $_SESSION['business_email'];
                 <button class="nav-link active" id="listings-tab" data-bs-toggle="tab" data-bs-target="#listings" type="button" role="tab">Products / Services</button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="pending-tab" data-bs-toggle="tab" data-bs-target="#pending" type="button" role="tab">Ratings</button>
+                <button class="nav-link" id="ratings-tab" data-bs-toggle="tab" data-bs-target="#analytics" type="button" role="tab">Ratings</button>
             </li>
         </ul>
     </nav>
