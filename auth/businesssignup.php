@@ -1,75 +1,46 @@
 <?php
-session_start();
-include("connection.php");
+    session_start();
+    include("../database/connection.php");
 
-$error = '';
-$success = '';
+    // Check if the form was submitted
+    if (isset($_POST['signup'])) {
+        // 1. Get all the info from the form
+        $company = $_POST['company'];
+        $description = $_POST['description'];
+        $email = $_POST['email'];
+        $phone = $_POST['phone'];
+        $address = $_POST['address'];
+        $postcode = $_POST['postcode'];
+        $city = $_POST['city'];
+        $county = $_POST['county'];
+        $country = $_POST['country'];
+        $product_category = $_POST['product_category'];
+        $service_category = $_POST['service_category'];
+        $password = $_POST['password'];
+        $confirm_password = $_POST['confirm_password'];
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['signup'])) {
-    $company = trim($_POST['company'] ?? '');
-    $description = trim($_POST['description'] ?? '');
-    $email = trim($_POST['email'] ?? '');
-    $phone = trim($_POST['phone'] ?? '');
-    $address = trim($_POST['address'] ?? '');
-    $postcode = trim($_POST['postcode'] ?? '');
-    $city = trim($_POST['city'] ?? '');
-    $county = $_POST['county'] ?? '';
-    $country = $_POST['country'] ?? '';
-    $product_category = $_POST['product_category'] ?? '';
-    $service_category = $_POST['service_category'] ?? '';
-    $password = $_POST['password'] ?? '';
-    $confirm_password = $_POST['confirm_password'] ?? '';
-
-    $errors = [];
-    if (!$company) $errors[] = "Company name is required";
-    if (!$email || !filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = "Valid email is required";
-    if (!$phone) $errors[] = "Contact number is required";
-    if (!$address) $errors[] = "Address is required";
-    if (!$postcode) $errors[] = "Postcode is required";
-    if (!$city) $errors[] = "City is required";
-    if (!$county) $errors[] = "County is required";
-    if (!$country) $errors[] = "Country is required";
-    if (!$product_category) $errors[] = "Product category is required";
-    if (!$service_category) $errors[] = "Service category is required";
-    if (!$password || strlen($password) < 8) $errors[] = "Password must be at least 8 characters";
-    if ($password !== $confirm_password) $errors[] = "Passwords do not match";
-
-    if (empty($errors)) {
-        $stmt = $conn->prepare("SELECT id FROM businesses WHERE email = ?");
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
-        $stmt->store_result();
-        if ($stmt->num_rows > 0) {
-            $errors[] = "Email is already registered as a business.";
-        }
-        $stmt->close();
-    }
-
-    if (!empty($errors)) {
-        $error = "<ul><li>" . implode("</li><li>", $errors) . "</li></ul>";
-    } else {
-        $password_hash = password_hash($password, PASSWORD_DEFAULT);
-
-        $stmt = $conn->prepare("INSERT INTO businesses 
-            (company_name, description, email, phone, address, postcode, city, county, country, product_category, service_category, password_hash)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param(
-            "ssssssssssss",
-            $company, $description, $email, $phone, $address, $postcode, $city, $county, $country, $product_category, $service_category, $password_hash
-        );
-
-        if ($stmt->execute()) {
-            $_SESSION['email'] = $email;
-            
-            $_SESSION['business_email'] = $email;
-            $_SESSION['business_id'] = $stmt->insert_id;
-            header("Location: business.php");
-            exit();
+        // 2. Make sure passwords match!
+        if ($password !== $confirm_password) {
+            $error = "Passwords do not match!";
         } else {
-            $error = "Registration failed: " . htmlspecialchars($stmt->error);
+            // 3. Hide the password
+            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+            // 4. Save the info in the database
+            $sql = "INSERT INTO businesses (company, description, email, phone, address, postcode, city, county, country, product_category, service_category, password)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("ssssssssssss", $company, $description, $email, $phone, $address, $postcode, $city, $county, $country, $product_category, $service_category, $hashed_password);
+
+            if ($stmt->execute()) {
+                // 5. Yay! Go to business.php
+                header("Location: ../dash/business.php");
+                exit();
+            } else {
+                $error = "Oops! Something went wrong: " . $stmt->error;
+            }
         }
-        $stmt->close();
-    }
 }
 ?>
 
@@ -79,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['signup'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <title>Sign Up Page</title>
@@ -87,15 +58,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['signup'])) {
 <body>
     <div class="container login min-vh-100 d-flex align-items-center justify-content-center">
         <div class="card d-flex">
-
-        <?php if ($error): ?>
-            <div class="alert alert-danger"><?php echo $error; ?></div>
-        <?php endif; ?>
-
             <!-- Sign Up Form -->
             <form action="" method="post" class="mt-4 login-form d-flex flex-column" id="signupForm">
+
+                <?php if (isset($error)) { ?>
+                    <div class="alert alert-danger"><?php echo $error; ?></div>
+                <?php } ?>
                 
-            <div class="card-header d-flex flex-column align-items-center w-100">
+                <div class="card-header d-flex flex-column align-items-center w-100">
                     <h1 class="form-title">Welcome</h1>
                     <p class="subtitle d-flex justify-content-center align-items-center w-100 px-3">Register your business account</p>
                 </div>
@@ -207,5 +177,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['signup'])) {
     </div>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Client-side validation example
+        document.getElementById('signupForm').addEventListener('submit', function(e) {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            
+            if (password !== confirmPassword) {
+                alert('Passwords do not match!');
+                e.preventDefault();
+            }
+            
+            
+        });
+    </script>
 </body>
 </html>

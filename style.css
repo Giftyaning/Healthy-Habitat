@@ -61,8 +61,11 @@ a {
   border-radius: 0.2em;
 }
 .btn-add{
-    border: 1px solid var(--success-clr) !important;
-    padding:.5em;
+  border: 1px solid var(--success-clr) !important;
+  padding:.1em .5em !important;
+}
+.btn-edit, .btn-delete{
+  border: 1px solid var(--success-clr) !important;
 }
 
 /*-- End of Navbar--*/
@@ -98,6 +101,9 @@ a {
   margin-top: -16em;
   z-index: 2;
   padding-bottom: 2rem;
+}
+.bi-hand-thumbs-up{
+  color: var(--success-clr) !important;
 }
 
 /*-- Hero Products --*/

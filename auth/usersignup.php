@@ -1,81 +1,47 @@
 <?php
-session_start();
-include("connection.php");
+    session_start();
+    include("../database/connection.php");
 
-$error = '';
-$success = '';
+    // Check if the form was submitted
+    if (isset($_POST['signup'])) {
+        // 1. Get all the info from the form
+        $firstName = $_POST['firstName'];
+        $lastName = $_POST['lastName'];
+        $email = $_POST['email'];
+        $gender = $_POST['gender'];
+        $ageGroup = $_POST['ageGroup'];
+        $interest = $_POST['interest'];
+        $postcode = $_POST['postcode'];
+        $city = $_POST['city'];
+        $county = $_POST['county'];
+        $country = $_POST['country'];
+        $password = $_POST['password'];
+        $confirm_password = $_POST['confirm_password'];
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['signup'])) {
-    //Data collection
-    $firstName = trim($_POST['firstName'] ?? '');
-    $lastName = trim($_POST['lastName'] ?? '');
-    $email = trim($_POST['email'] ?? '');
-    $gender = $_POST['gender'] ?? null;
-    $ageGroup = $_POST['ageGroup'] ?? '';
-    $interest = $_POST['interest'] ?? '';
-    $postcode = trim($_POST['postcode'] ?? '');
-    $city = trim($_POST['city'] ?? '');
-    $county = trim($_POST['county'] ?? '');
-    $country = $_POST['country'] ?? '';
-    $password = $_POST['password'] ?? '';
-    $confirm_password = $_POST['confirm_password'] ?? '';
-
-    // To validate required fields
-    $errors = [];
-    if (empty($firstName)) $errors[] = "First name is required";
-    if (empty($lastName)) $errors[] = "Last name is required";
-    if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = "Valid email is required";
-    if (empty($ageGroup)) $errors[] = "Age group is required";
-    if (empty($interest)) $errors[] = "Interest is required";
-    if (empty($postcode)) $errors[] = "Postcode is required";
-    if (empty($city)) $errors[] = "City is required";
-    if (empty($county)) $errors[] = "County/State is required";
-    if (empty($country)) $errors[] = "Country is required";
-    if (empty($password) || strlen($password) < 8) $errors[] = "Password must be at least 8 characters";
-    if ($password !== $confirm_password) $errors[] = "Passwords do not match";
-
-    // To check if email already exists
-    if (empty($errors)) {
-        $stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
-        $stmt->store_result();
-        if ($stmt->num_rows > 0) {
-            $errors[] = "Email is already registered";
-        }
-        $stmt->close();
-    }
-
-    if (!empty($errors)) {
-        $error = "<ul><li>" . implode("</li><li>", $errors) . "</li></ul>";
-    } else {
-        // Hashed password
-        $password_hash = password_hash($password, PASSWORD_DEFAULT);
-
-        // Insert into database
-        $stmt = $conn->prepare("INSERT INTO users 
-            (first_name, last_name, email, gender, age_group, interest, postcode, city, county, country, password_hash)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param(
-            "sssssssssss",
-            $firstName, $lastName, $email, $gender, $ageGroup, $interest, $postcode, $city, $county, $country, $password_hash
-        );
-
-        if ($stmt->execute()) {
-
-            $_SESSION['email'] = $email;
-
-            // Page redirection
-            header("Location: index.php");
-            exit();
+        // 2. Make sure passwords match!
+        if ($password !== $confirm_password) {
+            $error = "Passwords do not match!";
         } else {
-            $error = "Registration failed: " . htmlspecialchars($stmt->error);
-        }
-        $stmt->close();
-    }
-}
-?>
+            // 3. Hide the password (hash it)
+            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
+            // 4. Save the info in the database
+            $sql = "INSERT INTO users (firstName, lastName, email, gender, ageGroup, interest, postcode, city, county, country, password)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("sssssssssss", $firstName, $lastName, $email, $gender, $ageGroup, $interest, $postcode, $city, $county, $country, $hashed_password);
+
+            if ($stmt->execute()) {
+                // 5. Yay! Go to index.php (or wherever you want)
+                header("Location: ../index.php");
+                exit();
+            } else {
+                $error = "Oops! Something went wrong: " . $stmt->error;
+            }
+        }
+    }
+?>
 
 
 <!DOCTYPE html>
@@ -83,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['signup'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <title>Sign Up Page</title>
@@ -91,16 +57,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['signup'])) {
 <body>
     <div class="container login min-vh-100 d-flex align-items-center justify-content-center">
         <div class="card d-flex">
-            <!-- Error Handling -->
-            <?php if ($error): ?>
-                <div class="alert alert-danger"><?php echo $error; ?></div>
-            <?php endif; ?>
-            <?php if ($success): ?>
-                <div class="alert alert-success"><?php echo $success; ?></div>
-            <?php endif; ?>
-
             <!-- Sign Up Form -->
             <form action="" method="post" class="mt-4 login-form d-flex flex-column" id="signupForm">
+
+                <?php if (isset($error)) { ?>
+                    <div class="alert alert-danger"><?php echo $error; ?></div>
+                <?php } ?>
 
                 <div class="card-header d-flex flex-column align-items-center w-100">
                     <h1 class="form-title">Welcome</h1>
@@ -140,7 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['signup'])) {
                         <select class="form-select input" name="ageGroup" id="ageGroup" required>
                             <option value="" selected disabled>Select Age Group</option>
                             <option value="18-24">18-24</option>
-                            <option value="25-34" >25-34</option>
+                            <option value="25-34">25-34</option>
                             <option value="35-44">35-44</option>
                             <option value="45-54">45-54</option>
                             <option value="55-64">55-64</option>
@@ -209,5 +171,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['signup'])) {
     </div>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Client-side validation
+        document.getElementById('signupForm').addEventListener('submit', function(e) {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            
+            if (password !== confirmPassword) {
+                alert('Passwords do not match!');
+                e.preventDefault();
+            }
+            
+            // Add more validation as needed
+            if (password.length < 8) {
+                alert('Password must be at least 8 characters long');
+                e.preventDefault();
+            }
+            
+            // Check required fields
+            const requiredFields = document.querySelectorAll('[required]');
+            let isValid = true;
+            
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    isValid = false;
+                    field.style.borderColor = 'red';
+                } else {
+                    field.style.borderColor = '';
+                }
+            });
+            
+            if (!isValid) {
+                alert('Please fill in all required fields');
+                e.preventDefault();
+            }
+        });
+    </script>
 </body>
 </html>
