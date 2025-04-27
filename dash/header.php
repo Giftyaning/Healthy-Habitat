@@ -15,10 +15,11 @@
             <a class="navbar-brand" href="#"><img src="images/logo-dark.svg" alt=""></a>
 
             <!-- Search Engine -->
-            <form class="d-flex search" role="search">
-                <input class="input search-input form-control me-2 p-2" type="search" placeholder="Search products, brands, and categories" aria-label="Search">
+            <form class="d-flex search" role="search" method="GET" action="/healthy-habitat-network/auth/search.php">
+                <input class="input search-input form-control me-2 p-2" type="search" name="q" placeholder="Search products, brands, and categories" aria-label="Search">
                 <button class="btn hero-btn" type="submit">Search</button>
             </form>
+
 
             <!-- Dynamic Profile Section -->
             <div class="d-flex align-items-center profile">
@@ -30,9 +31,9 @@
                     </div>
                 <?php else: ?>
                     <div class="profile d-flex align-items-center ms-2">
-                        <a href="/sign/auth/login.php">LOG IN</a> 
+                        <a href="/healthy-habitat-network/auth/login.php">LOG IN</a> 
                         /
-                        <a href="/sign/auth/signupoption.php">REGISTER</a>
+                        <a href="/healthy-habitat-network/auth/signupoption.php">REGISTER</a>
                     </div>
                 <?php endif; ?>
             </div>

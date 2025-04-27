@@ -14,7 +14,7 @@ if (isset($_GET['id'])) {
     $stmt->execute();
 }
 
-// Redirect to the correct admin dashboard
+// Redirect to the admin dashboard
 header("Location: ../dash/admin.php");
 exit();
 ?>

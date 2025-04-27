@@ -1,35 +1,48 @@
 <?php
-session_start();
-include("database/connection.php");
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 header('Content-Type: application/json');
+session_start();
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    echo json_encode(['success' => false, 'message' => 'Invalid request']);
+// Adjust the path below as needed!
+include("../database/connection.php");
+
+// CSRF check
+if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== ($_SESSION['csrf_token'] ?? '')) {
+    echo json_encode(['success' => false, 'message' => 'Invalid CSRF token.']);
     exit;
 }
 
-$product_id = filter_input(INPUT_POST, 'product_id', FILTER_VALIDATE_INT);
+$product_id = $_POST['product_id'] ?? null;
 $user_id = $_SESSION['user_id'] ?? null;
 
 if (!$product_id || !$user_id) {
-    echo json_encode(['success' => false, 'message' => 'You must be logged in to vote.']);
+    echo json_encode(['success' => false, 'message' => 'Invalid request.']);
     exit;
 }
 
-// Check if this user already voted for this product
-$stmt = $conn->prepare("SELECT id FROM product_votes WHERE product_id = ? AND user_id = ?");
-$stmt->bind_param("ii", $product_id, $user_id);
+// Check if the user has already voted for this product
+$stmt = $conn->prepare("SELECT id FROM product_votes WHERE user_id = ? AND product_id = ?");
+$stmt->bind_param("ii", $user_id, $product_id);
 $stmt->execute();
+$result = $stmt->get_result();
 
-if ($stmt->get_result()->num_rows > 0) {
-    echo json_encode(['success' => false, 'message' => 'You already voted for this product']);
+if ($result && $result->num_rows > 0) {
+    $stmt->close();
+    echo json_encode(['success' => false, 'message' => 'You have already voted for this product.']);
     exit;
 }
+$stmt->close();
 
-// Insert vote (rating = 1 for thumbs up)
-$stmt = $conn->prepare("INSERT INTO product_votes (product_id, user_id, rating, vote_date) VALUES (?, ?, 1, NOW())");
-$stmt->bind_param("ii", $product_id, $user_id);
-$stmt->execute();
+// Save the vote (set rating to NULL)
+$stmt = $conn->prepare("INSERT INTO product_votes (user_id, product_id, rating, vote_date) VALUES (?, ?, NULL, NOW())");
+$stmt->bind_param("ii", $user_id, $product_id);
 
-echo json_encode(['success' => true, 'message' => 'Vote recorded']);
+if ($stmt->execute()) {
+    echo json_encode(['success' => true, 'message' => 'Vote saved successfully.']);
+} else {
+    echo json_encode(['success' => false, 'message' => 'Failed to save vote.', 'error' => $stmt->error]);
+}
+$stmt->close();
 ?>

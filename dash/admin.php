@@ -191,10 +191,13 @@ if (isset($_POST['add_council'])) {
 
             <!-- Councils Tab -->
             <div class="tab-pane fade" id="councils" role="tabpanel">
-                <h2 class="mb-4">Councils</h2>
-                <button class="btn btn-add mb-3" data-bs-toggle="modal" data-bs-target="#addCouncilModal">
-                    <i class="bi bi-plus-lg"></i> Add Council
-                </button>
+                <div class="council-header d-flex justify-content-between align-items-center ">
+                    <h2 class="mb-4">Councils</h2>
+                    <button class="btn btn-add mb-3" data-bs-toggle="modal" data-bs-target="#addCouncilModal">
+                        <i class="bi bi-plus-lg"></i> Add Council
+                    </button> 
+                </div>
+                
                 <div class="table-responsive data-table">
                     <table class="table table-striped table-hover">
                         <thead>

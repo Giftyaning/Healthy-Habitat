@@ -169,6 +169,12 @@ a {
   display: block;
   object-fit: cover;
 }
+.vote-btn.voted {
+    background-color: var(--success-clr);
+    color: white;
+    border: 1px solid var(--success-clr);
+}
+
 
 /*-- End of Hero section--*/
 

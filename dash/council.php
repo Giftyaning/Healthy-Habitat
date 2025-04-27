@@ -49,33 +49,34 @@ $result = $stmt->get_result();
 while ($row = $result->fetch_assoc()) {
     $areas[] = $row;
 }
+$stmt->close();
 
-// --- ANALYTICS SETUP ---
-// Get all area cities for this council
-$areaNames = array_column($areas, 'city');
+$areaCities = array_column($areas, 'city');
 
-// Only run analytics if there are areas
-$categoryLabels = [];
-$categoryVoteCounts = [];
-if (count($areaNames) > 0) {
-    // Fix: Use correct product category column name (change 'category' if needed)
-    $cityList = "'" . implode("','", array_map([$conn, 'real_escape_string'], $areaNames)) . "'";
-    $sql = "SELECT p.category AS product_category, COUNT(v.product_id) AS vote_count 
-            FROM product_votes v
-            JOIN products p ON v.product_id = p.id
-            WHERE p.city IN ($cityList)
-            GROUP BY p.category";
+// Fetch votes per product for all products in the council's cities
+$productNames = [];
+$voteCounts = [];
+if (count($areaCities) > 0) {
+    // Prepare city list
+    $cityList = implode("','", array_map([$conn, 'real_escape_string'], $areaCities));
+    $sql = "
+        SELECT p.name, COUNT(v.id) AS vote_count
+        FROM products p
+        LEFT JOIN product_votes v ON p.id = v.product_id
+        WHERE p.city IN ('$cityList')
+        GROUP BY p.id
+        ORDER BY vote_count DESC, p.name ASC
+    ";
     $result = $conn->query($sql);
     while ($row = $result->fetch_assoc()) {
-        $categoryLabels[] = $row['product_category'];
-        $categoryVoteCounts[] = $row['vote_count'];
+        $productNames[] = $row['name'];
+        $voteCounts[] = (int)$row['vote_count'];
     }
 }
-
-// JSON encode the data for JavaScript
-$labelsJson = json_encode($categoryLabels);
-$dataJson = json_encode($categoryVoteCounts);
+$labelsJson = json_encode($productNames);
+$dataJson = json_encode($voteCounts);
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -89,7 +90,7 @@ $dataJson = json_encode($categoryVoteCounts);
 </head>
 <body>
     <!-- Dashboard Header -->
-    <header class="dashboard-header">
+    <header class="dashboard-header d-flex justify-content-between align-items-center px-4 py-2">
         <img src="../images/logo-dark.svg" alt="Logo" class="logo">
         <div class="profile-section d-flex gap-3">
             <i class="bi bi-person-circle profile-icon"></i>
@@ -104,24 +105,47 @@ $dataJson = json_encode($categoryVoteCounts);
     <nav class="dashboard-nav mt-4 d-flex justify-content-center align-items-center">
         <ul class="nav nav-tabs" id="dashboardTabs" role="tablist">
             <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="analytics-tab" data-bs-toggle="tab" data-bs-target="#analytics" type="button" role="tab">View Analytics</button>
+                <button class="nav-link active" id="analytics-tab" data-bs-toggle="tab" data-bs-target="#analytics" type="button" role="tab">Product Analytics</button>
             </li>
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="add-area-tab" data-bs-toggle="tab" data-bs-target="#add-area" type="button" role="tab">Add Area</button>
             </li>
         </ul>
     </nav>
-    
     <!-- Dashboard Content -->
     <main class="dashboard-content">
         <div class="tab-content" id="dashboardTabsContent">
+            
             <!-- Analytics Tab -->
             <div class="tab-pane fade show active" id="analytics" role="tabpanel">
-                <h2 class="mb-4 mt-4">Product Analytics</h2>
+                <h2 class="mb-4 mt-4">Votes Per Product (All Areas)</h2>
+                <div class="mb-4">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Votes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <?php if (count($productNames) > 0): ?>
+                            <?php foreach ($productNames as $i => $name): ?>
+                                <tr>
+                                    <td><?= htmlspecialchars($name) ?></td>
+                                    <td><?= $voteCounts[$i] ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <tr><td colspan="2">No products found for your areas.</td></tr>
+                        <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
                 <div class="chart-container">
                     <canvas id="analyticsChart"></canvas>
                 </div>
             </div>
+
             <!-- Add Area Tab -->
             <div class="tab-pane fade" id="add-area" role="tabpanel">
                 <h2 class="mb-4">Add New Area</h2>
@@ -163,6 +187,7 @@ $dataJson = json_encode($categoryVoteCounts);
                     </div>
                     <button type="submit" class="btn hero-btn" name="add_area">Add Area</button>
                 </form>
+
                 <!-- Areas Table -->
                 <div class="areas-table mt-4">
                     <h3 class="mb-3">Added Areas</h3>
@@ -194,7 +219,7 @@ $dataJson = json_encode($categoryVoteCounts);
                                     </tr>
                                 <?php endforeach; ?>
                             <?php else: ?>
-                                <tr><td colspan="6">No areas added yet.</td></tr>
+                                <tr><td colspan="5">No areas added yet.</td></tr>
                             <?php endif; ?>
                             </tbody>
                         </table>
@@ -205,36 +230,26 @@ $dataJson = json_encode($categoryVoteCounts);
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         const ctx = document.getElementById('analyticsChart').getContext('2d');
         const analyticsChart = new Chart(ctx, {
-            type: 'pie',
+            type: 'bar',
             data: {
-                labels: <?php echo $labelsJson; ?>,
+                labels: <?= $labelsJson ?>,
                 datasets: [{
-                    data: <?php echo $dataJson; ?>,
-                    backgroundColor: [
-                        '#00A251',
-                        '#2ECC71',
-                        '#3498DB',
-                        '#9B59B6',
-                        '#F1C40F'
-                    ],
-                    borderWidth: 1
+                    label: 'Votes',
+                    data: <?= $dataJson ?>,
+                    backgroundColor: 'rgba(52, 152, 219, 0.7)'
                 }]
             },
             options: {
                 responsive: true,
                 plugins: {
-                    legend: {
-                        position: 'right',
-                    },
+                    legend: { display: false },
                     title: {
                         display: true,
-                        text: 'Product Category Distribution',
-                        font: {
-                            size: 16
-                        }
+                        text: 'Votes per Product (All Areas)'
                     }
                 }
             }

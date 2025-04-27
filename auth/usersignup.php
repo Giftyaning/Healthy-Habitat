@@ -4,7 +4,7 @@
 
     // Check if the form was submitted
     if (isset($_POST['signup'])) {
-        // 1. Get all the info from the form
+        // Get all the info from the form
         $firstName = $_POST['firstName'];
         $lastName = $_POST['lastName'];
         $email = $_POST['email'];
@@ -18,14 +18,14 @@
         $password = $_POST['password'];
         $confirm_password = $_POST['confirm_password'];
 
-        // 2. Make sure passwords match!
+        // Make sure passwords match!
         if ($password !== $confirm_password) {
             $error = "Passwords do not match!";
         } else {
-            // 3. Hide the password (hash it)
+            // Hide the password (hash it)
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-            // 4. Save the info in the database
+            // Save the info in the database
             $sql = "INSERT INTO users (firstName, lastName, email, gender, ageGroup, interest, postcode, city, county, country, password)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
@@ -33,7 +33,6 @@
             $stmt->bind_param("sssssssssss", $firstName, $lastName, $email, $gender, $ageGroup, $interest, $postcode, $city, $county, $country, $hashed_password);
 
             if ($stmt->execute()) {
-                // 5. Yay! Go to index.php (or wherever you want)
                 header("Location: ../index.php");
                 exit();
             } else {
@@ -111,7 +110,7 @@
                     </div>
                 </div>
                 
-                <!-- Interests and Location -->
+                
                 <div class="mb-3">
                     <label for="interest" class="form-label">Area of Interest*</label>
                     <select class="form-select input" name="interest" id="interest" required>
@@ -150,7 +149,7 @@
                     </select>
                 </div>
                 
-                <!-- Password -->
+                
                 <div class="mb-3">
                     <label for="password" class="form-label">Password*</label>
                     <input type="password" placeholder="Create Password (min 8 characters)" name="password" class="form-control input" id="password" minlength="8" required>
@@ -164,7 +163,7 @@
                 <input type="submit" value="Sign Up" name="signup" class="btn sign w-100 p-3 mt-2">
 
                 <div class="mt-3 text-center">
-                    <p class="mt-2">Already have an account? <a href="login.php" class="text-decoration-none">Log in</a></p>
+                    <p class="mt-2">Already have an account? <a href="../auth/login.php" class="text-decoration-none">Log in</a></p>
                 </div>
             </form>             
         </div>

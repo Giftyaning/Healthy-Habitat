@@ -4,7 +4,7 @@
 
     // Check if the form was submitted
     if (isset($_POST['signup'])) {
-        // 1. Get all the info from the form
+        // Get all the info from the form
         $company = $_POST['company'];
         $description = $_POST['description'];
         $email = $_POST['email'];
@@ -19,14 +19,14 @@
         $password = $_POST['password'];
         $confirm_password = $_POST['confirm_password'];
 
-        // 2. Make sure passwords match!
+        // Make sure passwords match!
         if ($password !== $confirm_password) {
             $error = "Passwords do not match!";
         } else {
-            // 3. Hide the password
+            // Hide the password
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-            // 4. Save the info in the database
+            // Save the info in the database
             $sql = "INSERT INTO businesses (company, description, email, phone, address, postcode, city, county, country, product_category, service_category, password)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
@@ -34,7 +34,7 @@
             $stmt->bind_param("ssssssssssss", $company, $description, $email, $phone, $address, $postcode, $city, $county, $country, $product_category, $service_category, $hashed_password);
 
             if ($stmt->execute()) {
-                // 5. Yay! Go to business.php
+                
                 header("Location: ../dash/business.php");
                 exit();
             } else {
@@ -58,7 +58,8 @@
 <body>
     <div class="container login min-vh-100 d-flex align-items-center justify-content-center">
         <div class="card d-flex">
-            <!-- Sign Up Form -->
+            
+        <!-- Sign Up Form -->
             <form action="" method="post" class="mt-4 login-form d-flex flex-column" id="signupForm">
 
                 <?php if (isset($error)) { ?>

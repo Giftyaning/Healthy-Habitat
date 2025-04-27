@@ -6,7 +6,7 @@ if (isset($_POST['login'])) {
     $email = $_POST['email'];
     $password = $_POST['password'];
 
-    // 1. Check users table
+    // Check users table
     $sql = "SELECT * FROM users WHERE email = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $email);
@@ -18,7 +18,7 @@ if (isset($_POST['login'])) {
         $row = $result->fetch_assoc();
         $userType = 'user';
     } else {
-        // 2. Check businesses table
+        // Check businesses table
         $sql = "SELECT * FROM businesses WHERE email = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("s", $email);
@@ -28,7 +28,7 @@ if (isset($_POST['login'])) {
             $row = $result->fetch_assoc();
             $userType = 'business';
         } else {
-            // 3. Check admins table
+            // Check admins table
             $sql = "SELECT * FROM admins WHERE email = ?";
             $stmt = $conn->prepare($sql);
             $stmt->bind_param("s", $email);
@@ -38,7 +38,7 @@ if (isset($_POST['login'])) {
                 $row = $result->fetch_assoc();
                 $userType = 'admin';
             } else {
-                // 4. Check councils table
+                // Check councils table
                 $sql = "SELECT * FROM councils WHERE email = ?";
                 $stmt = $conn->prepare($sql);
                 $stmt->bind_param("s", $email);
@@ -104,7 +104,8 @@ if (isset($_POST['login'])) {
 <body>
     <div class="container login min-vh-100 d-flex align-items-center justify-content-center">
         <div class="card d-flex">
-            <!-- Sign In Form -->
+            
+        <!-- Sign In Form -->
             <form action="login.php" method="post" class="mt-5 login-form d-flex flex-column" id="loginForm">
 
                 <?php if (isset($error)) { ?>
@@ -145,8 +146,6 @@ if (isset($_POST['login'])) {
                 alert('Please fill in both email and password fields');
                 e.preventDefault();
             }
-            
-            
         });
     </script>
 </body>
